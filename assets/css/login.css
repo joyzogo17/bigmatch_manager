@@ -1,0 +1,333 @@
+/* ================================================================
+   BIG MATCH MANAGER v1.0.4 — login.css
+   Shared styles for: login.html, admin/admin-login.html,
+   login-equipe.html, resultats.html
+   ================================================================ */
+
+:root {
+  --pitch:      #060f09;
+  --pitch-mid:  #0a1a0e;
+  --pitch-card: #0d2114;
+  --lime:       #b5e853;
+  --gold:       #f5c842;
+  --red:        #e63946;
+  --blue:       #4fc3f7;
+  --purple:     #a78bfa;
+  --white:      #f8faf5;
+  --text-dim:   #6b9a78;
+  --border:     #1e4a2a;
+  --border-2:   #2a5e38;
+
+  /* Dynamic accent border colours (changeable via hex/rgb) */
+  --accent-admin: #f5c842;
+  --accent-team:  #4fc3f7;
+  --accent-obs:   #6b9a78;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background: var(--pitch);
+  color: var(--white);
+}
+
+/* ── PAGE WRAPPER ─────────────────────────────────────────────────── */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 40px;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -5%, rgba(181,232,83,.1) 0%, transparent 70%),
+    var(--pitch);
+}
+
+/* ── LOGIN CARD ───────────────────────────────────────────────────── */
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: var(--pitch-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 32px 30px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 0 1px var(--border);
+  transition: border-color .35s ease, box-shadow .35s ease;
+}
+
+/* Dynamic accent borders */
+.login-card.accent-admin {
+  border-color: rgba(245,200,66,.45);
+  box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 40px rgba(245,200,66,.12);
+}
+.login-card.accent-team {
+  border-color: rgba(79,195,247,.45);
+  box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 40px rgba(79,195,247,.12);
+}
+.login-card.accent-obs {
+  border-color: rgba(107,154,120,.45);
+  box-shadow: 0 24px 80px rgba(0,0,0,.8), 0 0 20px rgba(107,154,120,.1);
+}
+
+/* ── APP HEADER ───────────────────────────────────────────────────── */
+.login-header { text-align: center; margin-bottom: 28px; }
+
+.login-logo-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.login-logo-icon ion-icon {
+  font-size: 52px;
+  color: var(--lime);
+  filter: drop-shadow(0 0 14px rgba(181,232,83,.35));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+.login-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: var(--lime);
+  margin-bottom: 4px;
+}
+.login-welcome { font-size: 14px; color: var(--white); font-weight: 600; }
+.login-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+
+/* ── DIVIDER ──────────────────────────────────────────────────────── */
+.login-divider {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 18px;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── CHOICE BUTTONS ───────────────────────────────────────────────── */
+.choice-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: rgba(255,255,255,.025);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  text-decoration: none;
+  transition: all .2s ease;
+  margin-bottom: 10px;
+  text-align: left;
+}
+.choice-btn:last-child { margin-bottom: 0; }
+.choice-btn:hover { transform: translateX(4px); }
+
+.choice-icon {
+  width: 42px; height: 42px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.choice-icon ion-icon { font-size: 20px; }
+
+.choice-content { flex: 1; }
+.choice-title { font-size: 15px; font-weight: 700; color: var(--white); display: block; margin-bottom: 2px; }
+.choice-desc  { font-size: 11px; color: var(--text-dim); display: block; }
+.choice-arrow { margin-left: auto; flex-shrink: 0; }
+.choice-arrow ion-icon { font-size: 18px; opacity: .5; }
+
+/* Admin */
+.choice-admin { border-color: rgba(245,200,66,.2); }
+.choice-admin .choice-icon { background: rgba(245,200,66,.12); color: var(--gold); }
+.choice-admin:hover { background: rgba(245,200,66,.06); border-color: rgba(245,200,66,.5); }
+/* Team */
+.choice-team { border-color: rgba(79,195,247,.2); }
+.choice-team .choice-icon { background: rgba(79,195,247,.12); color: var(--blue); }
+.choice-team:hover { background: rgba(79,195,247,.06); border-color: rgba(79,195,247,.5); }
+/* Observer */
+.choice-obs { border-color: rgba(107,154,120,.2); }
+.choice-obs .choice-icon { background: rgba(107,154,120,.12); color: var(--text-dim); }
+.choice-obs:hover { background: rgba(107,154,120,.06); border-color: rgba(107,154,120,.5); }
+
+/* ── PANEL HEADER (sub-pages) ─────────────────────────────────────── */
+.panel-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-back {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.panel-back:hover { border-color: var(--lime); color: var(--lime); }
+.panel-back ion-icon { font-size: 14px; }
+.panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 1.5px;
+  color: var(--lime);
+}
+
+/* ── FORM ELEMENTS ────────────────────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .8px;
+  margin-bottom: 7px;
+}
+.form-label ion-icon { font-size: 13px; }
+.form-input, .form-select {
+  width: 100%;
+  background: rgba(0,0,0,.3);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  color: var(--white);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus, .form-select:focus { border-color: var(--lime); }
+.form-select { cursor: pointer; }
+.form-select option { background: var(--pitch-card); color: var(--white); }
+.pw-input { text-align: center; letter-spacing: 4px; font-size: 18px; }
+
+/* ── PASSWORD REVEAL SECTION ──────────────────────────────────────── */
+.pw-section {
+  background: rgba(0,0,0,.25);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 6px;
+  animation: fadeSlide .2s ease;
+}
+.pw-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .7px;
+  margin-bottom: 10px;
+}
+.pw-title ion-icon { font-size: 14px; }
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── BUTTONS ──────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700;
+  border-radius: 10px;
+  padding: 11px 18px;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  text-decoration: none;
+  width: 100%;
+}
+.btn ion-icon { font-size: 16px; flex-shrink: 0; }
+.btn-primary { background: var(--lime); color: var(--pitch); }
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-secondary { background: transparent; border: 1.5px solid var(--border); color: var(--text-dim); }
+.btn-secondary:hover { border-color: var(--lime); color: var(--lime); }
+
+/* ── ERROR BANNER ─────────────────────────────────────────────────── */
+.login-error {
+  display: none;
+  background: rgba(230,57,70,.1);
+  border: 1px solid rgba(230,57,70,.35);
+  border-radius: 8px;
+  color: var(--red);
+  font-size: 13px; font-weight: 600;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.login-error.show {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  animation: fadeSlide .2s ease;
+}
+.login-error ion-icon { font-size: 16px; flex-shrink: 0; }
+
+/* ── INFO CARD ────────────────────────────────────────────────────── */
+.info-card {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(79,195,247,.04);
+  border: 1px solid rgba(79,195,247,.15);
+  border-radius: 10px;
+  animation: fadeSlide .2s ease;
+}
+.info-card-title {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .7px;
+  margin-bottom: 8px;
+}
+.perm-row {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 12px; color: var(--text-dim);
+  line-height: 1.5; margin-bottom: 4px;
+}
+.perm-row ion-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.perm-ok  ion-icon { color: var(--lime); }
+.perm-no  ion-icon { color: var(--red); }
+
+/* ── FOOTER ───────────────────────────────────────────────────────── */
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 11px; color: var(--text-dim);
+  line-height: 1.9;
+}
+.login-footer strong { color: var(--lime); }
+.login-footer a { color: var(--text-dim); text-decoration: none; transition: color .2s; }
+.login-footer a:hover { color: var(--lime); }
+.footer-links {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px;
+}
+.footer-links a {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 9px;
+  font-size: 11px; transition: all .2s;
+}
+.footer-links a:hover { border-color: var(--lime); color: var(--lime); }
+.footer-links ion-icon { font-size: 13px; }
+
+/* ── VERSION BADGE ────────────────────────────────────────────────── */
+.version-badge {
+  position: fixed; bottom: 10px; right: 14px;
+  font-size: 10px; color: rgba(107,154,120,.35);
+  letter-spacing: .4px; pointer-events: none;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .login-card { padding: 24px 18px 22px; }
+  .login-title { font-size: 22px; }
+}

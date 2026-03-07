@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Match Manager — Connexion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+
+<div class="login-page">
+
+  <!-- ── LOGIN CARD ─────────────────────────────────────────────── -->
+  <div class="login-card" id="loginCard">
+
+    <!-- App identity -->
+    <div class="login-header">
+      <div class="login-logo-icon">
+        <ion-icon name="football-outline"></ion-icon>
+      </div>
+      <div class="login-title">BIG MATCH MANAGER</div>
+      <div class="login-welcome">Bienvenue sur Big Match Manager</div>
+      <div class="login-sub">Gestion de matchs, scores et statistiques de championnat</div>
+    </div>
+
+    <!-- Error banner -->
+    <div class="login-error" id="loginError" role="alert"></div>
+
+    <!-- Section divider -->
+    <div class="login-divider">Choisissez votre accès</div>
+
+    <!-- ① Administrateur -->
+    <a href="admin/admin-login.html" class="choice-btn choice-admin"
+       id="btnAdmin"
+       onmouseenter="setAccent('admin')" onmouseleave="setAccent(null)">
+      <span class="choice-icon">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </span>
+      <span class="choice-content">
+        <span class="choice-title">Administrateur</span>
+        <span class="choice-desc">Contrôleur &amp; Sous-Contrôleur — Accès complet ou partiel</span>
+      </span>
+      <span class="choice-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></span>
+    </a>
+
+    <!-- ② Équipe -->
+    <a href="login-equipe.html" class="choice-btn choice-team"
+       id="btnTeam"
+       onmouseenter="setAccent('team')" onmouseleave="setAccent(null)">
+      <span class="choice-icon">
+        <ion-icon name="people-outline"></ion-icon>
+      </span>
+      <span class="choice-content">
+        <span class="choice-title">Équipe</span>
+        <span class="choice-desc">Saisie &amp; modification des résultats de votre équipe</span>
+      </span>
+      <span class="choice-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></span>
+    </a>
+
+    <!-- ③ Voir les résultats -->
+    <button class="choice-btn choice-obs"
+            id="btnObs"
+            onclick="loginObserver()"
+            onmouseenter="setAccent('obs')" onmouseleave="setAccent(null)">
+      <span class="choice-icon">
+        <ion-icon name="eye-outline"></ion-icon>
+      </span>
+      <span class="choice-content">
+        <span class="choice-title">Voir les résultats</span>
+        <span class="choice-desc">Statistiques &amp; classements — Accès libre, sans mot de passe</span>
+      </span>
+      <span class="choice-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></span>
+    </button>
+
+  </div><!-- /login-card -->
+
+  <!-- Footer placeholder -->
+  <div id="bmmFooter"></div>
+
+</div><!-- /login-page -->
+
+<div class="version-badge">Big Match Manager v1.0.4</div>
+
+<script src="assets/js/shared.js"></script>
+<script>
+function loginObserver() {
+  const db = bmmGetDB();
+  const obs = (db && db.users.find(u => u.type === 'obs'))
+    || { id: 99, nom: 'Observateur', role: 'Observateur', type: 'obs', password: '' };
+  bmmLoginRedirect(obs);
+}
+
+function setAccent(type) {
+  const card = document.getElementById('loginCard');
+  card.classList.remove('accent-admin', 'accent-team', 'accent-obs');
+  if (type) card.classList.add(`accent-${type}`);
+}
+</script>
+
+</body>
+</html>

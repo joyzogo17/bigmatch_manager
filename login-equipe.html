@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Match Manager — Connexion Équipe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+
+<div class="login-page">
+
+  <div class="login-card accent-team">
+
+    <!-- Panel header -->
+    <div class="panel-header">
+      <a href="login.html" class="panel-back">
+        <ion-icon name="arrow-back-outline"></ion-icon> Retour
+      </a>
+      <div class="panel-title">Connexion Équipe</div>
+    </div>
+
+    <!-- Error -->
+    <div class="login-error" id="loginError" role="alert"></div>
+
+    <!-- No teams message (shown when DB has no teams) -->
+    <div id="noTeamsMsg" style="display:none;text-align:center;padding:24px 12px">
+      <ion-icon name="alert-circle-outline" style="font-size:40px;color:var(--red);display:block;margin-bottom:10px"></ion-icon>
+      <div style="font-weight:700;color:var(--white);margin-bottom:6px">Aucune équipe enregistrée</div>
+      <div style="font-size:12px;color:var(--text-dim)">
+        Contactez votre Contrôleur pour créer les équipes.
+      </div>
+    </div>
+
+    <!-- Team form -->
+    <div id="teamForm">
+      <div class="form-group">
+        <label class="form-label" for="teamSelect">
+          <ion-icon name="people-outline"></ion-icon> Votre équipe
+        </label>
+        <select class="form-select" id="teamSelect" onchange="onTeamChange()">
+          <option value="">— Choisir une équipe —</option>
+        </select>
+      </div>
+
+      <!-- Password (hidden until team chosen) -->
+      <div class="pw-section" id="pwSection" style="display:none">
+        <div class="pw-title" id="pwTitle">
+          <ion-icon name="lock-closed-outline"></ion-icon> Mot de passe de l'équipe
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <input type="password" class="form-input pw-input" id="pwInput"
+                 placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" onclick="checkPassword()">
+          <ion-icon name="log-in-outline"></ion-icon> Se connecter
+        </button>
+      </div>
+
+      <!-- Team permissions info -->
+      <div class="info-card" id="teamInfo" style="display:none">
+        <div class="info-card-title">Permissions de votre équipe</div>
+        <div class="perm-row perm-ok">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Saisir les résultats de vos matchs
+        </div>
+        <div class="perm-row perm-ok">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          Modifier les matchs récents (moins de 24h)
+        </div>
+        <div class="perm-row perm-no">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          Pas d'accès aux données des autres équipes
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /login-card -->
+
+  <div id="bmmFooter"></div>
+
+</div><!-- /login-page -->
+
+<div class="version-badge">Big Match Manager v1.0.4</div>
+
+<script src="assets/js/shared.js"></script>
+<script>
+let teams = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  const db = bmmGetDB();
+  if (!db) return;
+
+  teams = db.users.filter(u => u.type === 'equipe');
+  const sel    = document.getElementById('teamSelect');
+  const form   = document.getElementById('teamForm');
+  const noMsg  = document.getElementById('noTeamsMsg');
+
+  if (!teams.length) {
+    form.style.display  = 'none';
+    noMsg.style.display = 'block';
+    return;
+  }
+
+  teams.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.nom + (t.role && t.role !== t.nom ? ` — ${t.role}` : '');
+    sel.appendChild(opt);
+  });
+
+  document.getElementById('pwInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
+  });
+});
+
+function onTeamChange() {
+  const sel   = document.getElementById('teamSelect');
+  const pwSec = document.getElementById('pwSection');
+  const info  = document.getElementById('teamInfo');
+  bmmHideError('loginError');
+
+  if (!sel.value) {
+    pwSec.style.display = 'none';
+    info.style.display  = 'none';
+    return;
+  }
+
+  const team = teams.find(t => t.id === Number(sel.value));
+  document.getElementById('pwTitle').innerHTML =
+    `<ion-icon name="lock-closed-outline"></ion-icon> Mot de passe — ${team?.nom || ''}`;
+
+  pwSec.style.display = 'block';
+  info.style.display  = 'block';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwInput').focus();
+}
+
+function checkPassword() {
+  const sel = document.getElementById('teamSelect');
+  const pw  = document.getElementById('pwInput').value;
+  const tid = Number(sel?.value);
+
+  if (!tid) { bmmShowError('loginError', 'Sélectionnez votre équipe'); return; }
+  if (!pw)  { bmmShowError('loginError', 'Saisissez le mot de passe'); return; }
+
+  const db = bmmGetDB();
+  if (!db)  { bmmShowError('loginError', 'Données introuvables'); return; }
+
+  // Strict: password must match THIS exact team — not another team's password
+  const user = db.users.find(u => u.id === tid && u.type === 'equipe' && u.password === pw);
+  if (user) {
+    bmmLoginRedirect(user);
+  } else {
+    bmmShowError('loginError', 'Mot de passe incorrect pour cette équipe');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+</script>
+
+</body>
+</html>
