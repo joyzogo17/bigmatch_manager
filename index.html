@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>⚽ Big Match Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  LOGIN OVERLAY                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="ball">⚽</div>
+      <h1>BIG MATCH MANAGER</h1>
+      <p>Choisissez votre rôle pour continuer</p>
+    </div>
+
+    <!-- Role selection -->
+    <div id="roleSelectionDiv">
+      <button class="role-btn role-btn-ctrl" onclick="selectRole('Contrôleur')">
+        <div class="role-icon">🛡️</div>
+        <div>
+          <div class="role-name">Contrôleur</div>
+          <div class="role-desc">Accès complet — Super administrateur</div>
+        </div>
+      </button>
+      <button class="role-btn role-btn-rouge" onclick="selectRole('Rouge')">
+        <div class="role-icon">🔴</div>
+        <div>
+          <div class="role-name">Rouge</div>
+          <div class="role-desc">Responsable Équipe Rouge</div>
+        </div>
+      </button>
+      <button class="role-btn role-btn-blanc" onclick="selectRole('Blanc')">
+        <div class="role-icon">⚪</div>
+        <div>
+          <div class="role-name">Blanc</div>
+          <div class="role-desc">Responsable Équipe Blanche</div>
+        </div>
+      </button>
+      <button class="role-btn role-btn-obs" onclick="selectRole('Observateur')">
+        <div class="role-icon">👁️</div>
+        <div>
+          <div class="role-name">Observateur</div>
+          <div class="role-desc">Voir les résultats — Accès libre</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Password section (shown after role selection) -->
+    <div id="pwSection" style="display:none">
+      <div class="pw-section">
+        <div class="pw-title" id="pwTitle">Mot de passe</div>
+        <div class="form-group">
+          <input type="password" class="form-input pw-input" id="pwInput" placeholder="Mot de passe">
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkPassword()">
+          Connexion
+        </button>
+        <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="cancelLogin()">
+          ← Retour
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  HEADER                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-ball">⚽</div>
+      <div>
+        <div class="logo-text">BIG MATCH MANAGER</div>
+        <div class="logo-sub">Gestion de championnat</div>
+      </div>
+    </div>
+    <div class="user-bar">
+      <span id="yearDisplay"></span>
+      <div class="user-badge" id="userBadge" onclick="logout()">
+        <div class="role-dot" id="roleDot"></div>
+        <span id="userName">—</span>
+        <span style="font-size:10px;color:var(--text-dim)" id="userRole"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  NAV                                                            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="nav-btn active"
+            onclick="showSection('dashboard',this)">🏠 Tableau de bord</button>
+    <button class="nav-btn" id="navAdd"
+            onclick="showSection('add',this)"
+            style="display:none">➕ Ajouter match</button>
+    <button class="nav-btn"
+            onclick="showSection('history',this)">📋 Historique</button>
+    <button class="nav-btn"
+            onclick="showSection('stats',this)">📊 Statistiques</button>
+    <button class="nav-btn"
+            onclick="showSection('palmares',this)">🏆 Palmarès</button>
+    <button class="nav-btn" id="navUsers"
+            onclick="showSection('users',this)"
+            style="display:none">👤 Utilisateurs</button>
+    <button class="nav-btn" id="navLog"
+            onclick="showSection('log',this)"
+            style="display:none">🕒 Journal</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  MAIN                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ─── DASHBOARD ─────────────────────────────────────────────── -->
+  <section class="section active" id="sec-dashboard">
+
+    <!-- Last match hero -->
+    <div id="lastMatchSection"></div>
+
+    <!-- Weekly highlights -->
+    <div class="card">
+      <div class="card-title">⚡ Highlights de la Semaine</div>
+      <div class="highlights">
+        <div class="hl-card">
+          <div class="hl-icon">⚽</div>
+          <div><div class="hl-val" id="hlTopButSem">—</div><div class="hl-lbl">Meilleur Buteur (semaine)</div></div>
+        </div>
+        <div class="hl-card">
+          <div class="hl-icon">🎯</div>
+          <div><div class="hl-val" id="hlTopPassSem">—</div><div class="hl-lbl">Meilleur Passeur (semaine)</div></div>
+        </div>
+        <div class="hl-card">
+          <div class="hl-icon">🏆</div>
+          <div><div class="hl-val" id="hlMvpSem">—</div><div class="hl-lbl">MVP de la Semaine</div></div>
+        </div>
+        <div class="hl-card">
+          <div class="hl-icon">🔥</div>
+          <div><div class="hl-val" id="hlTopTeamSem">—</div><div class="hl-lbl">Équipe Dominante (semaine)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="stats-grid" id="quickStats"></div>
+
+    <!-- Charts row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="dashCharts">
+      <div class="card">
+        <div class="card-title">⚽ Top Buteurs</div>
+        <div class="chart-wrap" id="chartButeursData"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Top Passeurs</div>
+        <div class="chart-wrap" id="chartPasseursData"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 Buts par Équipe</div>
+      <div class="chart-wrap" id="chartEquipes"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 Matchs par Semaine</div>
+      <div class="chart-wrap" id="chartSemaines"></div>
+    </div>
+  </section>
+
+  <!-- ─── ADD MATCH ──────────────────────────────────────────────── -->
+  <section class="section" id="sec-add">
+    <div class="section-header">
+      <div class="section-title">➕ Nouveau Match</div>
+    </div>
+
+    <div class="card" id="lockWarningCard" style="display:none;background:rgba(230,57,70,.06);border-color:rgba(230,57,70,.3)">
+      <div style="color:var(--red);font-weight:600;font-size:13px">
+        🔒 Les matchs de plus de 24h sont verrouillés. Seul le Contrôleur peut les modifier.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="fDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Heure</label>
+          <input type="time" class="form-input" id="fHeure">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type de Match</label>
+          <select class="form-select" id="fType">
+            <option value="Big Match">Big Match</option>
+            <option value="Contre">Contre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Statut</label>
+          <select class="form-select" id="fStatut" onchange="onStatutChange()">
+            <option value="Match joué">Match joué</option>
+            <option value="Pas de match">Pas de match</option>
+            <option value="Match annulé">Match annulé</option>
+            <option value="Match arrêté">Match arrêté</option>
+          </select>
+        </div>
+        <div class="form-group form-full motif-row" id="motifRow">
+          <label class="form-label">Motif</label>
+          <input type="text" class="form-input" id="fMotif" placeholder="Pluie, Bagarre, Terrain indisponible...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Équipe 1</label>
+          <input type="text" class="form-input" id="fEq1" list="teamsList" placeholder="Rouge">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Équipe 2</label>
+          <input type="text" class="form-input" id="fEq2" list="teamsList" placeholder="Blanc">
+        </div>
+        <div class="form-group form-full" id="scoreSection">
+          <label class="form-label">Score</label>
+          <div class="score-row">
+            <input type="number" class="form-input" id="fScore1" min="0" max="30" placeholder="0">
+            <span class="score-vs">—</span>
+            <input type="number" class="form-input" id="fScore2" min="0" max="30" placeholder="0">
+          </div>
+        </div>
+        <div class="form-group form-full" id="buteursSection">
+          <label class="form-label">
+            Buteurs Équipe 1
+            <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0">(Joueur (Passeur), virgule)</span>
+          </label>
+          <div style="position:relative">
+            <textarea class="form-textarea" id="fBut1"
+              placeholder="Junior (Mike), Steve (Paul)"
+              oninput="autocompleteButeurs('fBut1','ac1')"></textarea>
+            <div class="autocomplete-list" id="ac1"></div>
+          </div>
+        </div>
+        <div class="form-group form-full" id="buteurs2Section">
+          <label class="form-label">
+            Buteurs Équipe 2
+            <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0">(Joueur (Passeur))</span>
+          </label>
+          <div style="position:relative">
+            <textarea class="form-textarea" id="fBut2"
+              placeholder="Kanga (Junior)"
+              oninput="autocompleteButeurs('fBut2','ac2')"></textarea>
+            <div class="autocomplete-list" id="ac2"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btnSaveMatch" onclick="saveMatch()">💾 Enregistrer le match</button>
+        <button class="btn btn-secondary" onclick="resetForm()">🔄 Réinitialiser</button>
+      </div>
+    </div>
+    <datalist id="teamsList"></datalist>
+  </section>
+
+  <!-- ─── HISTORY ────────────────────────────────────────────────── -->
+  <section class="section" id="sec-history">
+    <div class="section-header">
+      <div class="section-title">📋 Historique des Matchs</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select class="form-select" id="histYearFilter"
+          style="width:90px;padding:7px 10px;font-size:12px"
+          onchange="renderHistory()"></select>
+        <input type="text" class="form-input" id="searchInput"
+          placeholder="🔍 Rechercher..."
+          style="width:160px;padding:7px 12px"
+          oninput="renderHistory()">
+        <select class="form-select" id="filterStatut"
+          style="width:150px;padding:7px 12px"
+          onchange="renderHistory()">
+          <option value="">Tous les statuts</option>
+          <option value="Match joué">Match joué</option>
+          <option value="Pas de match">Pas de match</option>
+          <option value="Match annulé">Match annulé</option>
+          <option value="Match arrêté">Match arrêté</option>
+        </select>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Jour</th><th>H.</th><th>Type</th><th>Statut</th>
+              <th>Éq.1</th><th>Score</th><th>Éq.2</th><th>Buteurs</th>
+              <th>MVP</th><th>🔒</th><th>❌</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STATS ──────────────────────────────────────────────────── -->
+  <section class="section" id="sec-stats">
+    <div class="section-header">
+      <div class="section-title">📊 Statistiques</div>
+      <div class="year-selector">
+        <label>Année :</label>
+        <select id="statsYear" onchange="renderStats()"></select>
+      </div>
+    </div>
+
+    <div class="stats-grid" id="allStats"></div>
+
+    <!-- Period tabs -->
+    <div class="period-tabs" id="statsPeriodTabs">
+      <button class="period-tab active" onclick="switchStatsPeriod('semaine',this)">Cette semaine</button>
+      <button class="period-tab" onclick="switchStatsPeriod('mois',this)">Ce mois</button>
+      <button class="period-tab" onclick="switchStatsPeriod('trimestre',this)">Ce trimestre</button>
+      <button class="period-tab" onclick="switchStatsPeriod('annee',this)">Cette année</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <div class="card-title">🥇 Top Buteurs</div>
+        <ul class="top-list" id="topButeursList"></ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Top Passeurs</div>
+        <ul class="top-list" id="topPasseursList"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👑 MVP (Homme du Match)</div>
+      <ul class="top-list" id="topMvpList"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏟️ Stats par Équipe</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Équipe</th><th>Matchs</th><th>Buts ⚽</th>
+              <th>Encaissés</th><th>Victoires</th><th>Nuls</th><th>Défaites</th>
+            </tr>
+          </thead>
+          <tbody id="teamStatsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PALMARÈS ────────────────────────────────────────────────── -->
+  <section class="section" id="sec-palmares">
+    <div class="section-title" style="margin-bottom:16px">🏆 Palmarès &amp; Victoires</div>
+
+    <div class="period-tabs" id="palmPeriodTabs">
+      <button class="period-tab active" onclick="switchPalmPeriod('semaine',this)">Semaine</button>
+      <button class="period-tab" onclick="switchPalmPeriod('mois',this)">Mois</button>
+      <button class="period-tab" onclick="switchPalmPeriod('trimestre',this)">Trimestre</button>
+      <button class="period-tab" onclick="switchPalmPeriod('annee',this)">Année</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="palmTitle">Victoires par équipe</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Période</th><th>Équipe</th><th>Victoires</th><th>Matchs</th></tr></thead>
+          <tbody id="palmBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <div class="card-title">🥇 Top Buteurs (période)</div>
+        <ul class="top-list" id="palmBut"></ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Top Passeurs (période)</div>
+        <ul class="top-list" id="palmPass"></ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">👑 MVP de la Période</div>
+      <ul class="top-list" id="palmMvp"></ul>
+    </div>
+  </section>
+
+  <!-- ─── USERS ───────────────────────────────────────────────────── -->
+  <section class="section" id="sec-users">
+    <div class="section-header">
+      <div class="section-title">👤 Gestion des Comptes</div>
+      <button class="btn btn-primary btn-sm" id="btnAddUser" onclick="openAddUser()">+ Ajouter</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Nom</th><th>Rôle</th><th>Mot de passe</th><th>Actions</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" id="addUserCard" style="display:none;margin-top:12px">
+      <div class="card-title">Nouvel Utilisateur</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-input" id="uNom" placeholder="Nom d'utilisateur">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rôle</label>
+          <select class="form-select" id="uRole">
+            <option value="Contrôleur">Contrôleur</option>
+            <option value="Rouge">Rouge</option>
+            <option value="Blanc">Blanc</option>
+            <option value="Observateur">Observateur</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" class="form-input" id="uPin" placeholder="Mot de passe">
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="saveUser()">Enregistrer</button>
+        <button class="btn btn-secondary btn-sm" onclick="cancelAddUser()">Annuler</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── JOURNAL ─────────────────────────────────────────────────── -->
+  <section class="section" id="sec-log">
+    <div class="section-title" style="margin-bottom:16px">🕒 Journal des Activités</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Date / Heure</th><th>Utilisateur</th><th>Rôle</th><th>Action</th></tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Notification toast -->
+<div class="notif" id="notif"></div>
+
+<!-- Script -->
+<script src="script.js"></script>
+</body>
+</html>
