@@ -41,12 +41,12 @@ Ouvrir ensuite `http://localhost:8080` dans le navigateur.
 
 ## 🔐 Rôles et accès
 
-| Rôle        | Mot de passe | Permissions |
+| Rôle        | Permissions |
 |-------------|-------------|-------------|
-| Contrôleur  | `Malaga2025!` | Accès complet, suppression, journal, gestion comptes |
-| Rouge       | `Rouge2025`   | Ajouter matchs, saisir buteurs/passeurs |
-| Blanc       | `BlancFC@`    | Ajouter matchs, saisir buteurs/passeurs |
-| Observateur | *(aucun)*     | Consultation uniquement |
+| Contrôleur  | Accès complet, suppression, journal, gestion comptes |
+| Rouge       | Ajouter matchs, saisir buteurs/passeurs |
+| Blanc       | Ajouter matchs, saisir buteurs/passeurs |
+| Observateur | Consultation uniquement |
 
 **Règles de sécurité :**
 - Rouge et Blanc ne peuvent **pas** supprimer un match.
