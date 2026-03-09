@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>⚽ Big Match Manager</title>
+  <title>Big Match Manager — v1.0.5 Borealis</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
@@ -13,62 +15,110 @@
 <!--  LOGIN OVERLAY                                                  -->
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="ball">⚽</div>
-      <h1>BIG MATCH MANAGER</h1>
-      <p>Choisissez votre rôle pour continuer</p>
+  <div class="login-box" id="loginBox">
+
+    <!-- ── PANEL 0 : ACCUEIL ─────────────────────────────────── -->
+    <div id="panelMain">
+      <div class="login-logo">
+        <div style="font-size:0"><ion-icon name="football-outline" style="font-size:44px;color:var(--lime)"></ion-icon></div>
+        <h1>BIG MATCH MANAGER</h1>
+        <p class="login-welcome">Bienvenue sur Big Match Manager</p>
+        <p class="login-sub">Sélectionnez votre accès pour continuer</p>
+      </div>
+
+      <button class="role-btn role-btn-admin" onclick="showLoginPanel('admin')">
+        <div class="role-icon"><ion-icon name="shield-checkmark-outline"></ion-icon></div>
+        <div>
+          <div class="role-name">Administrateur</div>
+          <div class="role-desc">Contrôleur ou Sous-contrôleur</div>
+        </div>
+        <div class="role-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></div>
+      </button>
+
+      <button class="role-btn role-btn-team" onclick="showLoginPanel('team')">
+        <div class="role-icon"><ion-icon name="people-outline"></ion-icon></div>
+        <div>
+          <div class="role-name">Équipe</div>
+          <div class="role-desc">Connexion par équipe enregistrée</div>
+        </div>
+        <div class="role-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></div>
+      </button>
+
+      <button class="role-btn role-btn-obs" onclick="loginAsObserver()">
+        <div class="role-icon"><ion-icon name="eye-outline"></ion-icon></div>
+        <div>
+          <div class="role-name">Voir les résultats</div>
+          <div class="role-desc">Statistiques globales — Accès libre</div>
+        </div>
+        <div class="role-arrow"><ion-icon name="chevron-forward-outline"></ion-icon></div>
+      </button>
     </div>
 
-    <!-- Role selection -->
-    <div id="roleSelectionDiv">
-      <button class="role-btn role-btn-ctrl" onclick="selectRole('Contrôleur')">
-        <div class="role-icon">🛡️</div>
-        <div>
-          <div class="role-name">Contrôleur</div>
-          <div class="role-desc">Accès complet — Super administrateur</div>
-        </div>
-      </button>
-      <button class="role-btn role-btn-rouge" onclick="selectRole('Rouge')">
-        <div class="role-icon">🔴</div>
-        <div>
-          <div class="role-name">Rouge</div>
-          <div class="role-desc">Responsable Équipe Rouge</div>
-        </div>
-      </button>
-      <button class="role-btn role-btn-blanc" onclick="selectRole('Blanc')">
-        <div class="role-icon">⚪</div>
-        <div>
-          <div class="role-name">Blanc</div>
-          <div class="role-desc">Responsable Équipe Blanche</div>
-        </div>
-      </button>
-      <button class="role-btn role-btn-obs" onclick="selectRole('Observateur')">
-        <div class="role-icon">👁️</div>
-        <div>
-          <div class="role-name">Observateur</div>
-          <div class="role-desc">Voir les résultats — Accès libre</div>
-        </div>
-      </button>
-    </div>
+    <!-- ── PANEL 1 : ADMINISTRATEUR ──────────────────────────── -->
+    <div id="panelAdmin" style="display:none">
+      <div class="login-panel-header">
+        <button class="back-btn" onclick="showLoginPanel('main')"><ion-icon name="arrow-back-outline" style="vertical-align:middle;margin-right:3px"></ion-icon>Retour</button>
+        <div class="panel-title">Administrateur</div>
+      </div>
 
-    <!-- Password section (shown after role selection) -->
-    <div id="pwSection" style="display:none">
-      <div class="pw-section">
-        <div class="pw-title" id="pwTitle">Mot de passe</div>
-        <div class="form-group">
-          <input type="password" class="form-input pw-input" id="pwInput" placeholder="Mot de passe">
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Niveau d'accès</label>
+        <select class="form-select login-select" id="adminRoleSelect" onchange="onAdminRoleChange()">
+          <option value="">— Sélectionner —</option>
+          <option value="Contrôleur">Contrôleur — Super Administrateur</option>
+          <option value="Sous-Contrôleur">Sous-Contrôleur — Accès limité</option>
+        </select>
+      </div>
+
+      <div id="adminPwSection" style="display:none">
+        <div class="pw-section" id="adminPwBox">
+          <div class="pw-title" id="adminPwTitle">Mot de passe</div>
+          <div class="form-group">
+            <input type="password" class="form-input pw-input" id="adminPwInput" placeholder="Mot de passe">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkAdminPassword()">
+            <ion-icon name="log-in-outline" style="vertical-align:middle;margin-right:5px"></ion-icon>Connexion
+          </button>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkPassword()">
-          Connexion
-        </button>
-        <button class="btn btn-secondary" style="width:100%;margin-top:8px" onclick="cancelLogin()">
-          ← Retour
-        </button>
       </div>
     </div>
-  </div>
-</div>
+
+    <!-- ── PANEL 2 : ÉQUIPE ───────────────────────────────────── -->
+    <div id="panelTeam" style="display:none">
+      <div class="login-panel-header">
+        <button class="back-btn" onclick="showLoginPanel('main')"><ion-icon name="arrow-back-outline" style="vertical-align:middle;margin-right:3px"></ion-icon>Retour</button>
+        <div class="panel-title">Connexion Équipe</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Sélectionner votre équipe</label>
+        <select class="form-select login-select" id="teamSelect" onchange="onTeamSelectChange()">
+          <option value="">— Choisir une équipe —</option>
+        </select>
+      </div>
+
+      <div id="teamPwSection" style="display:none">
+        <div class="pw-section" id="teamPwBox">
+          <div class="pw-title" id="teamPwTitle">Mot de passe de l'équipe</div>
+          <div class="form-group">
+            <input type="password" class="form-input pw-input" id="teamPwInput" placeholder="Mot de passe">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkTeamPassword()">
+            <ion-icon name="log-in-outline" style="vertical-align:middle;margin-right:5px"></ion-icon>Connexion
+          </button>
+        </div>
+      </div>
+
+      <div id="teamNoTeams" style="display:none;text-align:center;padding:20px;color:var(--text-dim);font-size:13px">
+        <ion-icon name="alert-circle-outline" style="font-size:26px;color:var(--red);display:block;margin-bottom:6px"></ion-icon>Aucune équipe enregistrée.<br><span style="font-size:11px">Un administrateur doit d'abord créer des équipes.</span>
+      </div>
+    </div>
+
+    <!-- ── Password error message (shared) ───────────────────── -->
+    <div id="loginError" class="login-error" style="display:none"></div>
+
+  </div><!-- /login-box -->
+</div><!-- /login-overlay -->
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
 <!--  HEADER                                                         -->
@@ -76,7 +126,7 @@
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-ball">⚽</div>
+      <div class="logo-ball"><ion-icon name="football-outline"></ion-icon></div>
       <div>
         <div class="logo-text">BIG MATCH MANAGER</div>
         <div class="logo-sub">Gestion de championnat</div>
@@ -99,22 +149,28 @@
 <nav class="nav">
   <div class="nav-inner">
     <button class="nav-btn active"
-            onclick="showSection('dashboard',this)">🏠 Tableau de bord</button>
+            onclick="showSection('dashboard',this)"><ion-icon name="grid-outline"></ion-icon> Tableau de bord</button>
     <button class="nav-btn" id="navAdd"
             onclick="showSection('add',this)"
-            style="display:none">➕ Ajouter match</button>
+            style="display:none"><ion-icon name="add-circle-outline"></ion-icon> Ajouter match</button>
     <button class="nav-btn"
-            onclick="showSection('history',this)">📋 Historique</button>
+            onclick="showSection('history',this)"><ion-icon name="list-outline"></ion-icon> Historique</button>
     <button class="nav-btn"
-            onclick="showSection('stats',this)">📊 Statistiques</button>
+            onclick="showSection('stats',this)"><ion-icon name="bar-chart-outline"></ion-icon> Statistiques</button>
     <button class="nav-btn"
-            onclick="showSection('palmares',this)">🏆 Palmarès</button>
+            onclick="showSection('palmares',this)"><ion-icon name="trophy-outline"></ion-icon> Palmarès</button>
     <button class="nav-btn" id="navUsers"
             onclick="showSection('users',this)"
-            style="display:none">👤 Utilisateurs</button>
+            style="display:none"><ion-icon name="people-outline"></ion-icon> Utilisateurs</button>
     <button class="nav-btn" id="navLog"
             onclick="showSection('log',this)"
-            style="display:none">🕒 Journal</button>
+            style="display:none"><ion-icon name="time-outline"></ion-icon> Journal</button>
+    <button class="nav-btn" id="navAbout"
+            onclick="showSection('about',this)"
+            style="display:none"><ion-icon name="information-circle-outline"></ion-icon> À propos</button>
+    <button class="nav-btn" id="btnExport"
+            onclick="exportData()"
+            style="display:none;margin-left:auto;color:var(--gold);border-bottom-color:transparent"><ion-icon name="download-outline"></ion-icon> Exporter</button>
   </div>
 </nav>
 
@@ -126,27 +182,44 @@
   <!-- ─── DASHBOARD ─────────────────────────────────────────────── -->
   <section class="section active" id="sec-dashboard">
 
+    <!-- Welcome introduction — always visible, identity of the app -->
+    <div class="card" style="background:linear-gradient(135deg,#0a5c2e,#072015);border-color:rgba(181,232,83,.35);margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="font-size:0;flex-shrink:0"><ion-icon name="football-outline" style="font-size:40px;color:var(--lime)"></ion-icon></div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--lime);margin-bottom:4px">
+            Bienvenue sur Big Match Manager
+          </div>
+          <div style="font-size:13px;color:var(--text-dim);line-height:1.6;max-width:680px">
+            Welcome to <strong style="color:var(--white)">Big Match Manager</strong> — a platform designed to manage matches,
+            scores, and player statistics efficiently. Track your team's performance, record scorers &amp; assists,
+            follow the MVP rankings, and export your data at any time.
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Last match hero -->
     <div id="lastMatchSection"></div>
 
     <!-- Weekly highlights -->
     <div class="card">
-      <div class="card-title">⚡ Highlights de la Semaine</div>
+      <div class="card-title"><ion-icon name="flash-outline"></ion-icon> Highlights de la Semaine</div>
       <div class="highlights">
         <div class="hl-card">
-          <div class="hl-icon">⚽</div>
+          <div class="hl-icon"><ion-icon name="football-outline"></ion-icon></div>
           <div><div class="hl-val" id="hlTopButSem">—</div><div class="hl-lbl">Meilleur Buteur (semaine)</div></div>
         </div>
         <div class="hl-card">
-          <div class="hl-icon">🎯</div>
+          <div class="hl-icon"><ion-icon name="locate-outline"></ion-icon></div>
           <div><div class="hl-val" id="hlTopPassSem">—</div><div class="hl-lbl">Meilleur Passeur (semaine)</div></div>
         </div>
         <div class="hl-card">
-          <div class="hl-icon">🏆</div>
+          <div class="hl-icon"><ion-icon name="star-outline"></ion-icon></div>
           <div><div class="hl-val" id="hlMvpSem">—</div><div class="hl-lbl">MVP de la Semaine</div></div>
         </div>
         <div class="hl-card">
-          <div class="hl-icon">🔥</div>
+          <div class="hl-icon"><ion-icon name="flame-outline"></ion-icon></div>
           <div><div class="hl-val" id="hlTopTeamSem">—</div><div class="hl-lbl">Équipe Dominante (semaine)</div></div>
         </div>
       </div>
@@ -158,20 +231,20 @@
     <!-- Charts row -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="dashCharts">
       <div class="card">
-        <div class="card-title">⚽ Top Buteurs</div>
+        <div class="card-title"><ion-icon name="football-outline"></ion-icon> Top Buteurs</div>
         <div class="chart-wrap" id="chartButeursData"></div>
       </div>
       <div class="card">
-        <div class="card-title">🎯 Top Passeurs</div>
+        <div class="card-title"><ion-icon name="locate-outline"></ion-icon> Top Passeurs</div>
         <div class="chart-wrap" id="chartPasseursData"></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">🏆 Buts par Équipe</div>
+      <div class="card-title"><ion-icon name="podium-outline"></ion-icon> Buts par Équipe</div>
       <div class="chart-wrap" id="chartEquipes"></div>
     </div>
     <div class="card">
-      <div class="card-title">📅 Matchs par Semaine</div>
+      <div class="card-title"><ion-icon name="calendar-outline"></ion-icon> Matchs par Semaine</div>
       <div class="chart-wrap" id="chartSemaines"></div>
     </div>
   </section>
@@ -179,12 +252,12 @@
   <!-- ─── ADD MATCH ──────────────────────────────────────────────── -->
   <section class="section" id="sec-add">
     <div class="section-header">
-      <div class="section-title">➕ Nouveau Match</div>
+      <div class="section-title"><ion-icon name="add-circle-outline"></ion-icon> Nouveau Match</div>
     </div>
 
     <div class="card" id="lockWarningCard" style="display:none;background:rgba(230,57,70,.06);border-color:rgba(230,57,70,.3)">
       <div style="color:var(--red);font-weight:600;font-size:13px">
-        🔒 Les matchs de plus de 24h sont verrouillés. Seul le Contrôleur peut les modifier.
+        <ion-icon name="lock-closed-outline" style="vertical-align:middle;margin-right:5px"></ion-icon>Les matchs de plus de 24h sont verrouillés. Seul le Contrôleur peut les modifier.
       </div>
     </div>
 
@@ -218,12 +291,28 @@
           <label class="form-label">Motif</label>
           <input type="text" class="form-input" id="fMotif" placeholder="Pluie, Bagarre, Terrain indisponible...">
         </div>
+        <!-- Sélecteur de position (visible uniquement pour les équipes connectées) -->
+        <div class="form-group form-full" id="positionRow" style="display:none">
+          <label class="form-label">
+            <ion-icon name="swap-horizontal-outline"></ion-icon> Votre position dans ce match
+          </label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:9px 14px;border:1.5px solid var(--border);border-radius:9px;background:rgba(255,255,255,.03);transition:all .2s;flex:1;min-width:120px">
+              <input type="radio" name="fPosition" id="fPositionDomicile" value="domicile" onchange="onPositionChange()" style="accent-color:var(--lime)" checked>
+              <span style="font-size:13px;font-weight:600;color:var(--white)">Domicile <span style="color:var(--text-dim);font-weight:400">(Blanc — Équipe 1)</span></span>
+            </label>
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer;padding:9px 14px;border:1.5px solid var(--border);border-radius:9px;background:rgba(255,255,255,.03);transition:all .2s;flex:1;min-width:120px">
+              <input type="radio" name="fPosition" id="fPositionExterieur" value="exterieur" onchange="onPositionChange()" style="accent-color:var(--red)">
+              <span style="font-size:13px;font-weight:600;color:var(--white)">Extérieur <span style="color:var(--text-dim);font-weight:400">(Rouge — Équipe 2)</span></span>
+            </label>
+          </div>
+        </div>
         <div class="form-group">
-          <label class="form-label">Équipe 1</label>
+          <label class="form-label">Équipe 1 <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0">(domicile)</span></label>
           <input type="text" class="form-input" id="fEq1" list="teamsList" placeholder="Rouge">
         </div>
         <div class="form-group">
-          <label class="form-label">Équipe 2</label>
+          <label class="form-label">Équipe 2 <span style="color:var(--text-dim);font-weight:400;text-transform:none;letter-spacing:0">(extérieur)</span></label>
           <input type="text" class="form-input" id="fEq2" list="teamsList" placeholder="Blanc">
         </div>
         <div class="form-group form-full" id="scoreSection">
@@ -232,6 +321,11 @@
             <input type="number" class="form-input" id="fScore1" min="0" max="30" placeholder="0">
             <span class="score-vs">—</span>
             <input type="number" class="form-input" id="fScore2" min="0" max="30" placeholder="0">
+          </div>
+          <!-- Avertissement pour l'équipe extérieure -->
+          <div id="scoreHintAway" style="display:none;margin-top:8px;padding:9px 12px;background:rgba(230,57,70,.07);border:1px solid rgba(230,57,70,.25);border-radius:8px;color:var(--red);font-size:12px;font-weight:600">
+            <ion-icon name="lock-closed-outline" style="vertical-align:middle;margin-right:5px"></ion-icon>
+            Seule l'équipe domicile (Blanc) peut saisir le score.
           </div>
         </div>
         <div class="form-group form-full" id="buteursSection">
@@ -260,8 +354,8 @@
         </div>
       </div>
       <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="btnSaveMatch" onclick="saveMatch()">💾 Enregistrer le match</button>
-        <button class="btn btn-secondary" onclick="resetForm()">🔄 Réinitialiser</button>
+        <button class="btn btn-primary" id="btnSaveMatch" onclick="saveMatch()"><ion-icon name="save-outline"></ion-icon> Enregistrer le match</button>
+        <button class="btn btn-secondary" onclick="resetForm()"><ion-icon name="refresh-outline"></ion-icon> Réinitialiser</button>
       </div>
     </div>
     <datalist id="teamsList"></datalist>
@@ -270,13 +364,13 @@
   <!-- ─── HISTORY ────────────────────────────────────────────────── -->
   <section class="section" id="sec-history">
     <div class="section-header">
-      <div class="section-title">📋 Historique des Matchs</div>
+      <div class="section-title"><ion-icon name="list-outline"></ion-icon> Historique des Matchs</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <select class="form-select" id="histYearFilter"
           style="width:90px;padding:7px 10px;font-size:12px"
           onchange="renderHistory()"></select>
         <input type="text" class="form-input" id="searchInput"
-          placeholder="🔍 Rechercher..."
+          placeholder="Rechercher..."
           style="width:160px;padding:7px 12px"
           oninput="renderHistory()">
         <select class="form-select" id="filterStatut"
@@ -297,7 +391,7 @@
             <tr>
               <th>Date</th><th>Jour</th><th>H.</th><th>Type</th><th>Statut</th>
               <th>Éq.1</th><th>Score</th><th>Éq.2</th><th>Buteurs</th>
-              <th>MVP</th><th>🔒</th><th>❌</th>
+              <th><ion-icon name="star-outline" style="font-size:13px"></ion-icon> MVP</th><th><ion-icon name="lock-closed-outline" style="font-size:13px"></ion-icon></th><th><ion-icon name="trash-outline" style="font-size:13px"></ion-icon></th>
             </tr>
           </thead>
           <tbody id="historyBody"></tbody>
@@ -309,7 +403,7 @@
   <!-- ─── STATS ──────────────────────────────────────────────────── -->
   <section class="section" id="sec-stats">
     <div class="section-header">
-      <div class="section-title">📊 Statistiques</div>
+      <div class="section-title"><ion-icon name="bar-chart-outline"></ion-icon> Statistiques</div>
       <div class="year-selector">
         <label>Année :</label>
         <select id="statsYear" onchange="renderStats()"></select>
@@ -328,27 +422,27 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div class="card">
-        <div class="card-title">🥇 Top Buteurs</div>
+        <div class="card-title"><ion-icon name="football-outline"></ion-icon> Top Buteurs</div>
         <ul class="top-list" id="topButeursList"></ul>
       </div>
       <div class="card">
-        <div class="card-title">🎯 Top Passeurs</div>
+        <div class="card-title"><ion-icon name="locate-outline"></ion-icon> Top Passeurs</div>
         <ul class="top-list" id="topPasseursList"></ul>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-title">👑 MVP (Homme du Match)</div>
+      <div class="card-title"><ion-icon name="star-outline"></ion-icon> MVP (Homme du Match)</div>
       <ul class="top-list" id="topMvpList"></ul>
     </div>
 
     <div class="card">
-      <div class="card-title">🏟️ Stats par Équipe</div>
+      <div class="card-title"><ion-icon name="stats-chart-outline"></ion-icon> Stats par Équipe</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Équipe</th><th>Matchs</th><th>Buts ⚽</th>
+              <th>Équipe</th><th>Matchs</th><th>Buts</th>
               <th>Encaissés</th><th>Victoires</th><th>Nuls</th><th>Défaites</th>
             </tr>
           </thead>
@@ -360,7 +454,7 @@
 
   <!-- ─── PALMARÈS ────────────────────────────────────────────────── -->
   <section class="section" id="sec-palmares">
-    <div class="section-title" style="margin-bottom:16px">🏆 Palmarès &amp; Victoires</div>
+    <div class="section-title" style="margin-bottom:16px"><ion-icon name="trophy-outline"></ion-icon> Palmarès &amp; Victoires</div>
 
     <div class="period-tabs" id="palmPeriodTabs">
       <button class="period-tab active" onclick="switchPalmPeriod('semaine',this)">Semaine</button>
@@ -381,16 +475,16 @@
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
       <div class="card">
-        <div class="card-title">🥇 Top Buteurs (période)</div>
+        <div class="card-title"><ion-icon name="football-outline"></ion-icon> Top Buteurs (période)</div>
         <ul class="top-list" id="palmBut"></ul>
       </div>
       <div class="card">
-        <div class="card-title">🎯 Top Passeurs (période)</div>
+        <div class="card-title"><ion-icon name="locate-outline"></ion-icon> Top Passeurs (période)</div>
         <ul class="top-list" id="palmPass"></ul>
       </div>
     </div>
     <div class="card">
-      <div class="card-title">👑 MVP de la Période</div>
+      <div class="card-title"><ion-icon name="star-outline"></ion-icon> MVP de la Période</div>
       <ul class="top-list" id="palmMvp"></ul>
     </div>
   </section>
@@ -398,13 +492,13 @@
   <!-- ─── USERS ───────────────────────────────────────────────────── -->
   <section class="section" id="sec-users">
     <div class="section-header">
-      <div class="section-title">👤 Gestion des Comptes</div>
+      <div class="section-title"><ion-icon name="people-circle-outline"></ion-icon> Gestion des Comptes</div>
       <button class="btn btn-primary btn-sm" id="btnAddUser" onclick="openAddUser()">+ Ajouter</button>
     </div>
     <div class="card" style="padding:0;overflow:hidden">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Nom</th><th>Rôle</th><th>Mot de passe</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Nom</th><th>Rôle</th><th>Type</th><th>Mot de passe</th><th>Actions</th></tr></thead>
           <tbody id="usersBody"></tbody>
         </table>
       </div>
@@ -417,13 +511,26 @@
           <input type="text" class="form-input" id="uNom" placeholder="Nom d'utilisateur">
         </div>
         <div class="form-group">
-          <label class="form-label">Rôle</label>
-          <select class="form-select" id="uRole">
-            <option value="Contrôleur">Contrôleur</option>
-            <option value="Rouge">Rouge</option>
-            <option value="Blanc">Blanc</option>
-            <option value="Observateur">Observateur</option>
+          <label class="form-label">Rôle / Type</label>
+          <select class="form-select" id="uRole" onchange="onUserRoleChange()">
+            <option value="">— Sélectionner —</option>
+            <optgroup label="Administrateurs">
+              <option value="Contrôleur">Contrôleur (Super Admin)</option>
+              <option value="Sous-Contrôleur">Sous-Contrôleur</option>
+            </optgroup>
+            <optgroup label="Équipes existantes" id="existingTeamsGroup"></optgroup>
+            <optgroup label="Nouvelle équipe">
+              <option value="__new_team__">Créer une nouvelle équipe…</option>
+            </optgroup>
+            <optgroup label="Autre">
+              <option value="Observateur">Observateur</option>
+            </optgroup>
           </select>
+        </div>
+        <!-- Custom team name — shown only when "Nouvelle équipe" is selected -->
+        <div class="form-group" id="customTeamRow" style="display:none">
+          <label class="form-label">Nom de l'équipe</label>
+          <input type="text" class="form-input" id="uTeamName" placeholder="Ex: Vert, Jaune, Club X…">
         </div>
         <div class="form-group">
           <label class="form-label">Mot de passe</label>
@@ -437,9 +544,63 @@
     </div>
   </section>
 
+  <!-- ─── À PROPOS ────────────────────────────────────────────────── -->
+  <section class="section" id="sec-about">
+    <div class="section-title" style="margin-bottom:16px">
+      <ion-icon name="information-circle-outline"></ion-icon> À propos de Big Match Manager
+    </div>
+
+    <!-- Carte créateur -->
+    <div class="card" style="background:linear-gradient(135deg,#0a5c2e,#072015);border-color:rgba(181,232,83,.3);margin-bottom:18px">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(181,232,83,.12);border:2px solid var(--lime);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <ion-icon name="code-slash-outline" style="font-size:24px;color:var(--lime)"></ion-icon>
+        </div>
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--lime)">Joyeux Zogo Abaga</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px">Développeur web &bull; Designer graphique &bull; Acteur des solutions numériques digitales</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description de l'application -->
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title" style="margin-bottom:12px">
+        <ion-icon name="football-outline" style="color:var(--lime);margin-right:6px"></ion-icon>
+        L'application
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:10px">
+        <strong style="color:var(--white)">Big Match Manager</strong> est une application conçue et développée par <strong style="color:var(--lime)">Joyeux Zogo Abaga</strong>.
+      </p>
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:10px">
+        Développeur web, designer graphique et acteur des solutions numériques digitales, il développe des solutions technologiques destinées à améliorer l'organisation et la gestion des activités sportives.
+      </p>
+      <p style="font-size:13px;color:rgba(230,57,70,.85);line-height:1.8;border:1px solid rgba(230,57,70,.2);border-radius:8px;padding:10px 14px;background:rgba(230,57,70,.05)">
+        <ion-icon name="shield-outline" style="vertical-align:middle;margin-right:5px"></ion-icon>
+        <strong>Toute reproduction ou modification de cette application sans autorisation est interdite.</strong>
+      </p>
+    </div>
+
+    <!-- Historique des versions -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">
+        <ion-icon name="git-branch-outline" style="color:var(--lime);margin-right:6px"></ion-icon>
+        Historique des versions
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Version</th><th>Nom de code</th><th>Date</th><th>Description</th></tr>
+          </thead>
+          <tbody id="versionHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- ─── JOURNAL ─────────────────────────────────────────────────── -->
   <section class="section" id="sec-log">
-    <div class="section-title" style="margin-bottom:16px">🕒 Journal des Activités</div>
+    <div class="section-title" style="margin-bottom:16px"><ion-icon name="time-outline"></ion-icon> Journal des Activités</div>
     <div class="card" style="padding:0;overflow:hidden">
       <div class="table-wrap">
         <table>
@@ -457,7 +618,79 @@
 <!-- Notification toast -->
 <div class="notif" id="notif"></div>
 
-<!-- Script -->
-<script src="script.js"></script>
+<!-- ================================================================ -->
+<!--  FOOTER — Joy ZOGO ABAGA                                          -->
+<!-- ================================================================ -->
+<footer style="background:#060f09;border-top:1px solid #1e4a2a;margin-top:40px;padding:24px 16px;text-align:center;font-size:13px;color:#6b9a78">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#b5e853;margin-bottom:6px">
+      Joy ZOGO ABAGA
+    </div>
+    <div style="margin-bottom:10px;line-height:1.8">
+      <a href="/cdn-cgi/l/email-protection#4b21243231242c24653b39240b2c262a222765282426" style="color:#6b9a78;text-decoration:none;margin:0 8px"><span class="__cf_email__" data-cfemail="dcb6b3a5a6b3bbb3f2acaeb39cbbb1bdb5b0f2bfb3b1">[email&#160;protected]</span></a>
+      <span style="color:#1e4a2a">|</span>
+      <span style="margin:0 8px">+241 77866740</span>
+    </div>
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <a href="https://www.facebook.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        <ion-icon name="logo-facebook"></ion-icon> Facebook
+      </a>
+      <a href="https://www.linkedin.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        <ion-icon name="logo-linkedin"></ion-icon> LinkedIn
+      </a>
+      <a href="https://wa.me/24177866740" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp
+      </a>
+      <a href="https://github.com" target="_blank" rel="noopener"
+         style="color:#6b9a78;text-decoration:none;border:1px solid #1e4a2a;border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px;transition:all .2s"
+         onmouseover="this.style.color='#b5e853';this.style.borderColor='#b5e853'"
+         onmouseout="this.style.color='#6b9a78';this.style.borderColor='#1e4a2a'">
+        <ion-icon name="logo-github"></ion-icon> GitHub
+      </a>
+    </div>
+    <div style="margin-bottom:8px;font-size:13px;color:var(--lime);font-weight:600">Big Match Manager</div>
+    <div style="font-size:11px;color:#6b9a78;margin-bottom:4px">Version 1.0.5 — Borealis</div>
+    <div style="font-size:11px;color:#4a7a58;margin-bottom:6px">
+      © Application créée par <strong style="color:#6b9a78">Joyeux Zogo Abaga</strong><br>
+      Développeur web · Designer graphique · Acteur des solutions numériques digitales
+    </div>
+    <div style="font-size:10px;color:#2a5e38">Tous droits réservés.</div>
+  </div>
+</footer>
+
+<div class="version-badge">v1.0.5 — Borealis</div>
+
+<!-- Main app script -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/js/script.js"></script>
+
+<!-- Session auto-login: receives user from login.html / admin-login.html / login-equipe.html -->
+<script>
+(function() {
+  const raw = sessionStorage.getItem('bmm_user');
+  if (!raw) return;
+  try {
+    const user = JSON.parse(raw);
+    sessionStorage.removeItem('bmm_user');
+    sessionStorage.removeItem('bmm_role');
+    // Poll until app is initialised, then inject user
+    const t = setInterval(() => {
+      if (typeof completeLogin === 'function' && typeof db !== 'undefined' && db) {
+        clearInterval(t);
+        completeLogin(user);
+      }
+    }, 30);
+  } catch(e) { /* malformed session — show login overlay */ }
+})();
+</script>
+
 </body>
 </html>
