@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Match Manager — Connexion Administrateur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="../assets/css/login.css">
+</head>
+<body>
+
+<div class="login-page">
+
+  <div class="login-card accent-admin" id="loginCard">
+
+    <!-- Panel header -->
+    <div class="panel-header">
+      <a href="../login.html" class="panel-back">
+        <ion-icon name="arrow-back-outline"></ion-icon> Retour
+      </a>
+      <div class="panel-title">Administrateur</div>
+    </div>
+
+    <!-- Error -->
+    <div class="login-error" id="loginError" role="alert"></div>
+
+    <!-- Role select -->
+    <div class="form-group">
+      <label class="form-label" for="adminRoleSelect">
+        <ion-icon name="key-outline"></ion-icon> Niveau d'accès
+      </label>
+      <select class="form-select" id="adminRoleSelect" onchange="onRoleChange()">
+        <option value="">— Sélectionner un niveau —</option>
+        <option value="Contrôleur">Contrôleur — Super Administrateur</option>
+        <option value="Sous-Contrôleur">Sous-Contrôleur — Accès limité</option>
+      </select>
+    </div>
+
+    <!-- Password (hidden until role chosen) -->
+    <div class="pw-section" id="pwSection" style="display:none">
+      <div class="pw-title" id="pwTitle">
+        <ion-icon name="lock-closed-outline"></ion-icon> Mot de passe
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <div style="position:relative">
+        <input type="password" class="form-input pw-input" id="pwInput"
+               placeholder="••••••••" autocomplete="current-password" style="padding-right:44px">
+        <button type="button" onclick="togglePwVisibility('pwInput',this)" class="pw-eye-btn"><ion-icon name="eye-outline"></ion-icon></button>
+      </div>
+      </div>
+      <button class="btn btn-primary" onclick="checkPassword()">
+        <ion-icon name="log-in-outline"></ion-icon> Se connecter
+      </button>
+    </div>
+
+    <!-- Permissions info card -->
+    <div class="info-card" id="permCard" style="display:none">
+      <div class="info-card-title" id="permTitle"></div>
+      <div id="permList"></div>
+    </div>
+
+  </div><!-- /login-card -->
+
+  <div id="bmmFooter"></div>
+
+</div><!-- /login-page -->
+
+<div class="version-badge">Big Match Manager v1.0.6 — Cygnus</div>
+
+<script src="../assets/js/shared.js"></script>
+<script>
+const PERMS = {
+  'Contrôleur': {
+    title: 'Contrôleur — Permissions',
+    ok: ['Accès complet à toutes les fonctionnalités',
+         'Ajout, modification, suppression de matchs',
+         'Gestion des utilisateurs et équipes',
+         'Journal d\'activité complet',
+         'Export des données',
+         'Modification des matchs verrouillés'],
+    no: []
+  },
+  'Sous-Contrôleur': {
+    title: 'Sous-Contrôleur — Permissions',
+    ok: ['Ajout et modification de matchs (moins de 24h)',
+         'Consultation du journal d\'activité',
+         'Export des données'],
+    no: ['Ne peut pas gérer les utilisateurs',
+         'Ne peut pas modifier les matchs verrouillés par le Contrôleur']
+  }
+};
+
+function onRoleChange() {
+  const role   = document.getElementById('adminRoleSelect').value;
+  const pwSec  = document.getElementById('pwSection');
+  const pCard  = document.getElementById('permCard');
+  bmmHideError('loginError');
+
+  if (!role) {
+    pwSec.style.display = 'none';
+    pCard.style.display = 'none';
+    return;
+  }
+
+  // Show password section
+  pwSec.style.display = 'block';
+  document.getElementById('pwTitle').innerHTML =
+    `<ion-icon name="lock-closed-outline"></ion-icon> Mot de passe — ${role}`;
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwInput').focus();
+
+  // Show permissions card
+  const p = PERMS[role];
+  if (p) {
+    document.getElementById('permTitle').textContent = p.title;
+    document.getElementById('permList').innerHTML = [
+      ...p.ok.map(t => `<div class="perm-row perm-ok"><ion-icon name="checkmark-circle-outline"></ion-icon>${t}</div>`),
+      ...p.no.map(t => `<div class="perm-row perm-no"><ion-icon name="close-circle-outline"></ion-icon>${t}</div>`)
+    ].join('');
+    pCard.style.display = 'block';
+  }
+}
+
+function checkPassword() {
+  const role = document.getElementById('adminRoleSelect').value;
+  const pw   = document.getElementById('pwInput').value;
+
+  if (!role) { bmmShowError('loginError', 'Sélectionnez un niveau d\'accès'); return; }
+  if (!pw)   { bmmShowError('loginError', 'Saisissez votre mot de passe'); return; }
+
+  const db = bmmGetDB();
+  if (!db) { bmmShowError('loginError', 'Données introuvables — initialisez l\'application'); return; }
+
+  const user = db.users.find(u => u.role === role && u.password === pw);
+  if (user) {
+    bmmLoginRedirect(user);
+  } else {
+    bmmShowError('loginError', 'Mot de passe incorrect');
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+// Enter key
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pwInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPassword();
+  });
+});
+
+function togglePwVisibility(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.innerHTML = '<ion-icon name="eye-off-outline"></ion-icon>';
+  } else {
+    inp.type = 'password';
+    btn.innerHTML = '<ion-icon name="eye-outline"></ion-icon>';
+  }
+}
+</script>
+
+</body>
+</html>
